@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "OurVoice",
+    "slug": "OurVoice",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/OurVoiceLogo.png",
+    "scheme": "ourvoice",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ourvoice.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/OurVoiceLogo.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/OurVoiceLogo.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/OurVoiceLogo.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#1e3a5f",
+          "dark": {
+            "backgroundColor": "#0f1216"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1d7da34f-d6c4-4d55-a874-51f17a241d11"
+      }
+    }
+  }
+}
