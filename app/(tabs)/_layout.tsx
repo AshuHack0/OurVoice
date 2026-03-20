@@ -89,6 +89,7 @@ export default function TabLayout() {
               ),
             }}
           />
+          <Tabs.Screen name="get-involved" options={{ href: null }} />
           <Tabs.Screen name="explore" options={{ href: null }} />
           <Tabs.Screen
             name="insights"

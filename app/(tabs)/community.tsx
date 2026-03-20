@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getDailyQuestions as getDailyQuestionsAPI, getResponsesByQuestion } from '@/services/api';
+import { getAllQuestions, getResponsesByQuestion } from '@/services/api';
 import type { CommunityResponse } from '@/data/types';
 import type { DailyQuestion } from '@/data/types';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,14 +55,13 @@ export default function CommunityResponsesScreen() {
     try {
       if (isRefresh) {
         setRefreshing(true);
-        setResponsesMap({}); // Clear cached responses for fresh data
+        setResponsesMap({});
       } else {
         setLoading(true);
       }
-      const response = await getDailyQuestionsAPI();
-      const fetchedQuestions = response.data.questions;
+      const response = await getAllQuestions(1, 50);
+      const fetchedQuestions = response.data;
       setQuestions(fetchedQuestions);
-      // Collapse all by default
       setCollapsedIds(new Set(fetchedQuestions.map((q: DailyQuestion) => q.id)));
     } catch (err) {
       console.error('Error fetching questions:', err);
@@ -139,11 +138,27 @@ export default function CommunityResponsesScreen() {
     });
   }, []);
 
+  const formatQuestionDate = useCallback((dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const qDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const diffDays = Math.round((today.getTime() - qDate.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) return 'Today';
+      if (diffDays === 1) return 'Yesterday';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    } catch {
+      return '';
+    }
+  }, []);
+
   const renderSectionHeader = useCallback(
     ({ section }: { section: Section }) => {
       const { question, questionIndex, totalCount } = section;
       const isCollapsed = collapsedIds.has(question.id);
       const countLabel = totalCount === 0 ? 'No replies' : `${totalCount} repl${totalCount !== 1 ? 'ies' : 'y'}`;
+      const dateLabel = question.date ? formatQuestionDate(question.date) : '';
 
       return (
         <Pressable
@@ -161,9 +176,18 @@ export default function CommunityResponsesScreen() {
               <IconSymbol name="questionmark.circle.fill" size={18} color="#fff" />
             </View>
             <View style={styles.threadStarterMeta}>
-              <ThemedText style={[styles.threadStarterLabel, { color: theme.tint }]}>
-                Question {questionIndex}
-              </ThemedText>
+              <View style={styles.threadStarterLabelRow}>
+                <ThemedText style={[styles.threadStarterLabel, { color: theme.tint }]}>
+                  Question {questionIndex}
+                </ThemedText>
+                {dateLabel !== '' && (
+                  <View style={[styles.dateBadge, { backgroundColor: theme.background }]}>
+                    <ThemedText style={[styles.dateBadgeText, { color: theme.textSecondary }]}>
+                      {dateLabel}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
               <View style={styles.threadStarterCountRow}>
                 <View style={[styles.replyCountChip, { backgroundColor: theme.background }]}>
                   <ThemedText style={[styles.replyCountChipText, { color: theme.textSecondary }]}>
@@ -198,7 +222,7 @@ export default function CommunityResponsesScreen() {
         </Pressable>
       );
     },
-    [theme, collapsedIds, toggleCollapsed]
+    [theme, collapsedIds, toggleCollapsed, formatQuestionDate]
   );
 
   const renderItem = useCallback(
@@ -256,7 +280,7 @@ export default function CommunityResponsesScreen() {
           Community
         </ThemedText>
         <ThemedText style={[styles.headerSub, { color: theme.textSecondary }]}>
-          Tap a question to read anonymous replies
+          All questions and anonymous replies
         </ThemedText>
       </ThemedView>
     ),
@@ -266,13 +290,18 @@ export default function CommunityResponsesScreen() {
   const listEmpty = useMemo(
     () => (
       <ThemedView style={styles.emptyWrap}>
-        <IconSymbol name="bubble.left.and.bubble.right" size={40} color={theme.textSecondary} />
+        <View style={[styles.emptyIconWrap, { backgroundColor: theme.accentHover }]}>
+          <IconSymbol name="bubble.left.and.bubble.right" size={44} color={theme.tint} />
+        </View>
+        <ThemedText style={[styles.emptyTitle, { color: colorScheme === 'dark' ? theme.text : BrandColors.charcoal }]}>
+          No responses yet
+        </ThemedText>
         <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
-          No responses yet. Share your thoughts on the Daily Question tab.
+          Share your thoughts on the Daily Question tab and come back to see what others are saying.
         </ThemedText>
       </ThemedView>
     ),
-    [theme]
+    [theme, colorScheme]
   );
 
   if (loading) {
@@ -370,10 +399,10 @@ const styles = StyleSheet.create({
   threadStarterWrap: {
     borderWidth: 1,
     borderRadius: BUBBLE_RADIUS,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
     paddingHorizontal: Spacing.card,
     marginTop: Spacing.cardBetween,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.sm + 2,
     ...Shadows.card,
   },
   threadStarterCollapsed: {
@@ -394,7 +423,22 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm,
   },
   threadStarterMeta: { flex: 1 },
+  threadStarterLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   threadStarterLabel: { ...Typography.overline, textTransform: 'uppercase', letterSpacing: 0.5 },
+  dateBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  dateBadgeText: {
+    ...Typography.caption,
+    fontSize: 11,
+    fontWeight: '500',
+  },
   threadStarterCountRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -441,19 +485,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: BUBBLE_RADIUS,
     borderTopLeftRadius: 4,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md + 2,
   },
-  chatBubbleText: { ...Typography.body, marginBottom: Spacing.xs, lineHeight: 22 },
+  chatBubbleText: { ...Typography.body, marginBottom: Spacing.xs, lineHeight: 23 },
   chatBubbleTime: { ...Typography.caption },
   // Load more replies (chat-style divider)
   loadMoreWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
     gap: Spacing.sm,
     marginBottom: Spacing.sm,
+    borderRadius: 12,
   },
   loadMoreLine: {
     flex: 1,
@@ -464,8 +509,23 @@ const styles = StyleSheet.create({
   showMorePressed: { opacity: 0.8 },
   emptyWrap: {
     alignItems: 'center',
-    paddingVertical: Spacing.xl * 2,
-    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl * 3,
+    paddingHorizontal: Spacing.xl,
+    gap: Spacing.sm,
   },
-  emptyText: { ...Typography.body, textAlign: 'center' },
+  emptyIconWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  emptyTitle: {
+    ...Typography.bodyBold,
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: Spacing.xs,
+  },
+  emptyText: { ...Typography.body, textAlign: 'center', lineHeight: 23, maxWidth: 300 },
 });

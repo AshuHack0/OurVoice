@@ -25,6 +25,10 @@ const MAPPING = {
   'line.3.horizontal': 'menu',
   'xmark': 'close',
   'checkmark.circle.fill': 'check-circle',
+  'person.3.fill': 'group',
+  'square.and.arrow.up': 'share',
+  'lightbulb.fill': 'lightbulb',
+  'hand.raised.fill': 'pan-tool',
 } as IconMapping;
 
 /**

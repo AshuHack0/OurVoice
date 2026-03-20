@@ -27,9 +27,9 @@ const DRAWER_WIDTH_PERCENT = 0.82;
 
 const MENU_ITEMS = [
   { label: 'About OurVoice', onPress: 'about' as const },
-  { label: 'Community Guidelines', onPress: null },
+  { label: 'Community Guidelines', onPress: 'guidelines' as const },
   { label: 'Contact', onPress: 'mailto' as const },
-  { label: 'Partner Organizations', onPress: null },
+  { label: 'Get Involved', onPress: 'get-involved' as const },
 ];
 
 /**
@@ -68,6 +68,10 @@ export function BrandHeader() {
   const handleMenuAction = (item: (typeof MENU_ITEMS)[0]) => {
     if (item.onPress === 'about') {
       router.push('/(tabs)/about');
+    } else if (item.onPress === 'get-involved') {
+      router.push('/(tabs)/get-involved');
+    } else if (item.onPress === 'guidelines') {
+      router.push('/guidelines');
     } else if (item.onPress === 'mailto') {
       Linking.openURL('mailto:contact@ourvoice.example.com');
     }

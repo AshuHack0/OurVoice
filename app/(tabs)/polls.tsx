@@ -217,10 +217,22 @@ export default function PollsScreen() {
 
               {userVoted ? (
                 <View style={styles.resultsBlock}>
+                  <View style={[styles.votedBadge, { backgroundColor: theme.accentHover }]}>
+                    <IconSymbol name="checkmark.circle.fill" size={14} color={theme.tint} />
+                    <ThemedText style={[styles.votedBadgeText, { color: theme.tint }]}>
+                      You voted
+                    </ThemedText>
+                  </View>
                   {poll.options.map((opt) => {
                     const pct = getPollOptionPercent(opt, poll.totalVotes);
                     return (
                       <View key={opt.id} style={styles.optionRow}>
+                        <View style={styles.optionMeta}>
+                          <ThemedText style={styles.optionLabel}>{opt.label}</ThemedText>
+                          <ThemedText style={[styles.optionPercent, { color: theme.textSecondary }]}>
+                            {pct}%
+                          </ThemedText>
+                        </View>
                         <View
                           style={[
                             styles.optionBarContainer,
@@ -239,12 +251,6 @@ export default function PollsScreen() {
                               },
                             ]}
                           />
-                        </View>
-                        <View style={styles.optionMeta}>
-                          <ThemedText style={styles.optionLabel}>{opt.label}</ThemedText>
-                          <ThemedText style={[styles.optionPercent, { color: theme.textSecondary }]}>
-                            {pct}%
-                          </ThemedText>
                         </View>
                       </View>
                     );
@@ -384,9 +390,9 @@ const styles = StyleSheet.create({
   pollCard: {
     borderWidth: 1,
     borderRadius: CARD_RADIUS,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 4,
     paddingHorizontal: Spacing.card,
-    marginBottom: Spacing.cardBetween,
+    marginBottom: Spacing.cardBetween + 2,
     ...Shadows.card,
   },
   pollCardTop: {
@@ -412,8 +418,22 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   voteCountChipText: { ...Typography.caption, fontWeight: '600' },
-  pollQuestion: { ...Typography.paragraph, fontWeight: '600', marginBottom: Spacing.md },
+  pollQuestion: { ...Typography.paragraph, fontWeight: '600', marginBottom: Spacing.md, lineHeight: 25 },
   optionsList: { gap: Spacing.sm },
+  votedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: Spacing.xs + 1,
+    borderRadius: 10,
+    marginBottom: Spacing.sm,
+  },
+  votedBadgeText: {
+    ...Typography.caption,
+    fontWeight: '600',
+  },
   optionButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -428,7 +448,7 @@ const styles = StyleSheet.create({
   optionButtonDisabled: { opacity: 0.5 },
   optionButtonLabel: { ...Typography.pollOption, flex: 1 },
   resultsBlock: { marginTop: Spacing.xs },
-  optionRow: { marginBottom: Spacing.sm },
+  optionRow: { marginBottom: Spacing.sm + 2 },
   optionBarContainer: {
     height: 10,
     borderRadius: 5,

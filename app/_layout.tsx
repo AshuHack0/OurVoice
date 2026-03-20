@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 import { BrandHeader } from '@/components/brand-header';
 import { SplashScreen as OurVoiceSplash } from '@/components/splash-screen';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Colors } from '@/constants/theme';
 
 // Keep native splash visible until we're ready to show our custom splash
 SplashScreen.preventAutoHideAsync();
@@ -44,6 +45,23 @@ export default function RootLayout() {
             headerShown: true,
             header: () => <BrandHeader />,
             headerShadowVisible: false,
+          }}
+        />
+        <Stack.Screen
+          name="guidelines"
+          options={{
+            title: 'Community Guidelines',
+            headerBackTitle: 'Back',
+            headerStyle: {
+              backgroundColor: Colors[colorScheme ?? 'light'].surface,
+            },
+            headerTintColor: Colors[colorScheme ?? 'light'].tint,
+            headerTitleStyle: {
+              fontWeight: '600',
+              fontSize: 17,
+              color: Colors[colorScheme ?? 'light'].text,
+            },
+            headerShadowVisible: true,
           }}
         />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />

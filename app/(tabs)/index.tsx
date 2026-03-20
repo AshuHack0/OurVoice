@@ -420,18 +420,25 @@ export default function DailyQuestionScreen() {
       keyboardVerticalOffset={keyboardVerticalOffset}>
       <SafeAreaView style={styles.safeArea} edges={[]}>
         <ThemedView style={[styles.header, { paddingHorizontal, marginBottom: Spacing.flowSectionGap }]}>
-        <ThemedText style={[styles.headerLabel, { color: colorScheme === 'dark' ? theme.text : BrandColors.charcoal }]}>
-          Today’s questions
-        </ThemedText>
-        <ThemedText style={[styles.headerDate, { color: theme.textSecondary }]}>
-          {new Date(date).toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-          })}
-        </ThemedText>
-      </ThemedView>
+          <ThemedText style={[styles.headerLabel, { color: colorScheme === 'dark' ? theme.text : BrandColors.charcoal }]}>
+            Today’s questions
+          </ThemedText>
+          <View style={styles.headerMeta}>
+            <ThemedText style={[styles.headerDate, { color: theme.textSecondary }]}>
+              {new Date(date).toLocaleDateString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </ThemedText>
+            <View style={[styles.headerCountChip, { backgroundColor: theme.accentHover }]}>
+              <ThemedText style={[styles.headerCountText, { color: theme.tint }]}>
+                {Object.values(responses).filter(r => r.submitted).length}/{questions.length} answered
+              </ThemedText>
+            </View>
+          </View>
+        </ThemedView>
 
       <ScrollView
         style={styles.scroll}
@@ -586,7 +593,22 @@ const styles = StyleSheet.create({
     ...Typography.headline,
     marginBottom: Spacing.xs,
   },
-  headerDate: { ...Typography.subtitle },
+  headerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.sm,
+  },
+  headerDate: { ...Typography.subtitle, flex: 1 },
+  headerCountChip: {
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: Spacing.xs + 1,
+    borderRadius: 10,
+  },
+  headerCountText: {
+    ...Typography.caption,
+    fontWeight: '600',
+  },
   scroll: { flex: 1 },
   listContent: { flexGrow: 1 },
   page: { paddingVertical: Spacing.cardBetween },
@@ -594,15 +616,15 @@ const styles = StyleSheet.create({
   questionCard: {
     borderWidth: 1,
     borderRadius: CARD_RADIUS,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 4,
     paddingHorizontal: Spacing.card,
-    marginBottom: Spacing.cardBetween,
+    marginBottom: Spacing.cardBetween + 2,
     ...Shadows.card,
   },
   questionCardTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.sm + 2,
   },
   questionIconWrap: {
     width: 36,
@@ -617,11 +639,11 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  questionText: { ...Typography.paragraph, fontWeight: '600' },
+  questionText: { ...Typography.paragraph, fontWeight: '600', lineHeight: 25 },
   responseCard: {
     borderWidth: 1,
     borderRadius: CARD_RADIUS,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 4,
     paddingHorizontal: Spacing.card,
     ...Shadows.card,
   },
@@ -634,15 +656,16 @@ const styles = StyleSheet.create({
   inputCard: {
     borderWidth: 1,
     borderRadius: 14,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    marginBottom: Spacing.sm,
-    minHeight: 100,
+    paddingHorizontal: Spacing.md + 2,
+    paddingVertical: Spacing.sm + 2,
+    marginBottom: Spacing.sm + 2,
+    minHeight: 110,
   },
   input: {
     ...Typography.body,
-    minHeight: 84,
+    minHeight: 88,
     padding: 0,
+    lineHeight: 23,
   },
   charCount: {
     ...Typography.caption,
@@ -670,7 +693,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.sm + 2,
     paddingHorizontal: Spacing.card,
   },
   submittedResponseBadge: {
@@ -682,9 +705,9 @@ const styles = StyleSheet.create({
   },
   submittedResponseText: {
     ...Typography.body,
-    lineHeight: 22,
+    lineHeight: 23,
     paddingHorizontal: Spacing.card,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
   },
   submittedResponseFooter: {
     borderTopWidth: 1,

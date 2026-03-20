@@ -19,9 +19,9 @@ const MAIN_NAV = [
 
 const FOOTER_NAV = [
   { label: 'About OurVoice', href: '/(tabs)/about' },
-  { label: 'Guidelines', href: '/(tabs)/about' },
+  { label: 'Guidelines', href: '/guidelines' },
   { label: 'Contact', action: 'mailto' as const },
-  { label: 'Partners', href: '/(tabs)/about' },
+  { label: 'Get Involved', href: '/(tabs)/get-involved' },
 ];
 
 /**
